@@ -171,6 +171,7 @@ pre_initialize_variables () {
             PSA_CORE_PATH='tf-psa-crypto/core'
             BUILTIN_SRC_PATH='tf-psa-crypto/drivers/builtin/src'
             CONFIG_TEST_DRIVER_H='tf-psa-crypto/tests/configs/config_test_driver.h'
+            TF_PSA_CRYPTO_ROOT_DIR="$PWD/tf-psa-crypto"
         else
             CRYPTO_CONFIG_H='include/psa/crypto_config.h'
             # helper_armc6_build_test() relies on these being defined,
@@ -185,6 +186,7 @@ pre_initialize_variables () {
         PSA_CORE_PATH='core'
         BUILTIN_SRC_PATH='drivers/builtin/src'
         CONFIG_TEST_DRIVER_H='tests/configs/config_test_driver.h'
+        TF_PSA_CRYPTO_ROOT_DIR="$PWD"
 
         config_files="$CRYPTO_CONFIG_H $CONFIG_TEST_DRIVER_H"
     fi
@@ -950,6 +952,10 @@ run_component () {
         "${dd_cmd[@]}"
     fi
 
+    if in_tf_psa_crypto_repo; then
+        pre_create_tf_psa_crypto_out_of_source_directory
+    fi
+
     # Run the component in a subshell, with error trapping and output
     # redirection set up based on the relevant options.
     if [ $KEEP_GOING -eq 1 ]; then
@@ -984,8 +990,22 @@ run_component () {
     fi
 
     # Restore the build tree to a clean state.
+    if in_tf_psa_crypto_repo; then
+        cleanup_tf_psa_crypto_out_of_source_directory
+    fi
+
     cleanup
     unset current_component
+}
+
+pre_create_tf_psa_crypto_out_of_source_directory () {
+    rm -rf "$OUT_OF_SOURCE_DIR"
+    mkdir "$OUT_OF_SOURCE_DIR"
+    cd "$OUT_OF_SOURCE_DIR"
+}
+cleanup_tf_psa_crypto_out_of_source_directory () {
+    cd "$TF_PSA_CRYPTO_ROOT_DIR"
+    rm -rf "$OUT_OF_SOURCE_DIR"
 }
 
 ################################################################
