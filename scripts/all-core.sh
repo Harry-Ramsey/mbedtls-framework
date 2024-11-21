@@ -166,6 +166,8 @@ pre_load_components () {
 pre_initialize_variables () {
     if in_mbedtls_repo; then
         CONFIG_H='include/mbedtls/mbedtls_config.h'
+        CONFIG_TEST_DRIVER_H='tests/include/test/drivers/config_test_driver.h'
+        MBEDTLS_ROOT_DIR="$PWD"
         if [ -d tf-psa-crypto ]; then
             CRYPTO_CONFIG_H='tf-psa-crypto/include/psa/crypto_config.h'
             PSA_CORE_PATH='tf-psa-crypto/core'
@@ -187,6 +189,7 @@ pre_initialize_variables () {
         BUILTIN_SRC_PATH='drivers/builtin/src'
         CONFIG_TEST_DRIVER_H='tests/configs/config_test_driver.h'
         TF_PSA_CRYPTO_ROOT_DIR="$PWD"
+        MBEDTLS_ROOT_DIR=""
 
         config_files="$CRYPTO_CONFIG_H $CONFIG_TEST_DRIVER_H"
     fi
